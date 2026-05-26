@@ -24,4 +24,14 @@ The `rag_app.py` file serves as the main entry point and backbone of our backend
 * `git pull` (Used to reconcile remote changes and resolve branch divergences)
 * `git stash` / `git stash pop` (Used to safely manage local changes during merge conflicts)
 
+---
 
+## Week 5 — First Backend API + Gemini Call
+This week, I successfully integrated the Google Generative AI SDK with FastAPI to execute a live AI text generation call entirely server-side.
+
+* **What `/test-gemini` does:** This endpoint securely triggers a backend call to Google's infrastructure using a hardcoded prompt ("Explain what a large language model is in one paragraph.") and returns the model's text output as a structured JSON object.
+* **Where the Gemini call lives:** The entire model initialization, execution, and text-extraction lifecycle is encapsulated safely inside the `test_gemini()` endpoint function inside `rag_app.py`.
+* **What I learned from documentation:** I learned how the `google-generativeai` library uses `genai.GenerativeModel` to instantiate a model environment. I also discovered that older model versions (like `gemini-1.5-flash`) have been updated in production environments, requiring a migration to `gemini-2.5-flash` to execute successful API handshakes.
+
+### Questions or Uncertainties
+* None! The security architecture keeping the API key hidden on the server while exposing clean JSON to the client makes complete sense. Ready for Week 6 chunking and data embedding!
