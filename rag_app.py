@@ -37,18 +37,40 @@ def test_gemini():
     """
     try:
         model = genai.GenerativeModel("gemini-2.5-flash")
-        prompt = "Explain what a large language model is in one paragraph."
-        response = model.generate_content(prompt)
+        outline_prompt = """
+        Create a short outline explaining what a large language model is.
+
+        Use 3-5 bullet points.
+        """
+
+        outline_response = model.generate_content(outline_prompt)
         
+        outline = outline_response.text
+        
+        print("Generated Outline:")
+        print(outline)
+
+        expand_prompt = f"""
+        Using the outline below, write a detailed explanation.
+
+        Outline:
+        {outline}
+        """
+        
+        final_response = model.generate_content(expand_prompt)
+        
+        final = final_response.text
+        
+        print("Generated Expansion:")
+        print(final_response.text)
+
         return {
-            "prompt": prompt,
-            "response": response.text
-        }
-        
+            "response": final_response.text
+            }
     except Exception as e:
         # This syntax is clean and will print the raw error directly to your console
         print("DEBUG GEMINI ERROR:", str(e))
         raise HTTPException(
-            status_code=500, 
-            detail="An error occurred while generating content from Gemini."
-        )
+            status_code=500,
+            detail=str(e)
+            )

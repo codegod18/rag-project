@@ -35,3 +35,15 @@ This week, I successfully integrated the Google Generative AI SDK with FastAPI t
 
 ### Questions or Uncertainties
 * None! The security architecture keeping the API key hidden on the server while exposing clean JSON to the client makes complete sense. Ready for Week 6 chunking and data embedding!
+
+## Week 6 Multi-Step Execution
+
+The `/test-gemini` endpoint now performs two sequential Gemini calls.
+
+### Step 1
+Generate a short outline explaining a large language model.
+
+### Step 2
+Use the generated outline to create a more detailed explanation.
+
+The output from the first call is stored in a variable and passed into the second call. This demonstrates multi-step execution and control flow within the backend.
