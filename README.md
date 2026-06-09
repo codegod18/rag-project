@@ -47,3 +47,9 @@ Generate a short outline explaining a large language model.
 Use the generated outline to create a more detailed explanation.
 
 The output from the first call is stored in a variable and passed into the second call. This demonstrates multi-step execution and control flow within the backend.
+
+## Week 7 — Validating User Input and AI Output
+
+This week, I enhanced the AI application by adding validation steps before and after the model generates a response. Input validation ensures that users provide meaningful questions before any AI processing occurs. Requests that are empty, too short, or excessively long are rejected immediately, preventing unnecessary API calls and improving overall reliability.
+
+I also implemented output validation to verify that the AI returns a useful response before it is sent back to the user. Responses that are empty or obviously inadequate are caught and handled appropriately. In addition, I added a second Gemini model call that reviews the first model’s answer. This reviewer model is responsible for improving unclear or incomplete responses and returning higher-quality output when necessary. Together, these validation and review steps demonstrate how real-world AI systems use multiple layers of quality control to produce safer, more reliable results.

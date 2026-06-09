@@ -1,6 +1,7 @@
 
 import os
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 from dotenv import load_dotenv
 import google.generativeai as genai
 
@@ -19,6 +20,63 @@ genai.configure(api_key=gemini_api_key)
 
 # Initialize the FastAPI application instance
 app = FastAPI(title="RAG Project Skeleton")
+
+class QueryRequest(BaseModel):
+    question: str
+
+def validate_user_input(text: str):
+    if text is None or text.strip() == "":
+        raise HTTPException(
+            status_code=400,
+            detail="Question cannot be empty"
+        )
+
+    if len(text) < 5:
+        raise HTTPException(
+            status_code=400,
+            detail="Question is too short"
+        )
+
+    if len(text) > 500:
+        raise HTTPException(
+            status_code=400,
+            detail="Question is too long"
+        )
+
+def validate_model_output(text: str):
+    if text is None or text.strip() == "":
+        raise HTTPException(
+            status_code=500,
+            detail="AI returned an empty response"
+        )
+
+    if len(text) < 10:
+        raise HTTPException(
+            status_code=500,
+            detail="AI response is too short"
+        )
+
+def review_model_output(original_answer: str):
+
+    review_prompt = f"""
+You are reviewing an AI-generated response.
+
+Your job:
+- If the response is unclear, incomplete, or poorly written, improve it.
+- If the response is already good, return it unchanged.
+
+AI response to review:
+
+{original_answer}
+"""
+
+    review_model = genai.GenerativeModel("gemini-2.5-flash")
+
+    review_response = review_model.generate_content(
+        review_prompt
+    )
+
+    return review_response.text
 
 @app.get("/health")
 def health_check():
@@ -74,3 +132,29 @@ def test_gemini():
             status_code=500,
             detail=str(e)
             )
+
+@app.post("/query")
+def query_ai(request: QueryRequest):
+
+    validate_user_input(request.question)
+
+    primary_model = genai.GenerativeModel(
+        "gemini-2.5-flash"
+    )
+
+    primary_response = primary_model.generate_content(
+        request.question
+    )
+
+    raw_answer = primary_response.text
+
+    validate_model_output(raw_answer)
+
+    reviewed_answer = review_model_output(
+        raw_answer
+    )
+
+    return {
+        "question": request.question,
+        "answer": reviewed_answer
+    }
